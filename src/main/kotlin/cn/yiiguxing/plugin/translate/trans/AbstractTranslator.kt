@@ -15,12 +15,12 @@ abstract class AbstractTranslator : Translator {
         Lang.default.takeIf { it in supportedTargetLanguages } ?: Lang.ENGLISH
     }
 
-    final override fun translate(text: String, srcLang: Lang, targetLang: Lang): Translation = checkError {
+    final override fun translate(text: String, srcLang: Lang, targetLang: Lang, separator: String): Translation = checkError {
         checkContentLength(text, contentLengthLimit)
-        doTranslate(text, srcLang, targetLang)
+        doTranslate(text, srcLang, targetLang, separator)
     }
 
-    protected abstract fun doTranslate(text: String, srcLang: Lang, targetLang: Lang): Translation
+    protected abstract fun doTranslate(text: String, srcLang: Lang, targetLang: Lang, separator:String): Translation
 
     protected inline fun <T> checkError(action: () -> T): T = try {
         action()

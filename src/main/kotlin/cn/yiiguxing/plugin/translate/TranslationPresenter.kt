@@ -44,6 +44,7 @@ class TranslationPresenter(private val view: View, private val recordHistory: Bo
         return when (settings.targetLanguageSelection) {
             DEFAULT -> Lang.AUTO.takeIf { isSupportedTargetLanguage(it) }
                 ?: if (text.isEmpty() || text.any(NON_LATIN_CONDITION)) Lang.ENGLISH else primaryLanguage
+
             PRIMARY_LANGUAGE -> primaryLanguage
             LAST -> states.lastLanguages.target.takeIf { isSupportedTargetLanguage(it) } ?: primaryLanguage
         }
@@ -76,7 +77,7 @@ class TranslationPresenter(private val view: View, private val recordHistory: Bo
 
         view.showStartTranslate(request, text)
 
-        translateService.translate(text, srcLang, targetLang, ResultListener(this, request))
+        translateService.translate(text, srcLang, targetLang, "", ResultListener(this, request))
     }
 
     private inline fun onPostResult(request: Presenter.Request, block: View.() -> Unit) {

@@ -27,6 +27,7 @@ class HistoryRenderer(
         } else {
             setRenderText(value)
         }
+        
     }
 
 

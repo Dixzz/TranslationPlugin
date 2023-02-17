@@ -6,7 +6,7 @@ object WebPages {
 
     private const val BASE_URL_GITHUB = "https://yiiguxing.github.io/TranslationPlugin"
     private const val BASE_URL_GITEE = "https://yiiguxing.gitee.io/translation-plugin"
-
+//    "ज़ोर की हँसी"
     fun get(vararg path: String, locale: Locale = Locale.getDefault()): String {
         val baseUrl =
             if (locale.language == Locale.CHINESE.language && (locale.country == "" || locale.country == "CN")) {

@@ -131,7 +131,13 @@ internal class MicrosoftTranslatorService {
         private val service: MicrosoftTranslatorService get() = service()
 
         @RequiresBackgroundThread
-        fun translate(text: String, from: Lang, to: Lang, textType: TextType = TextType.PLAIN): String {
+        fun translate(
+            text: String,
+            from: Lang,
+            to: Lang,
+            textType: TextType = TextType.PLAIN,
+            separator: String
+        ): String {
             val translateUrl = UrlBuilder(TRANSLATE_URL)
                 .addQueryParameter("api-version", "3.0")
                 .apply { if (from != Lang.AUTO) addQueryParameter("from", from.microsoftLanguageCode) }
@@ -139,7 +145,15 @@ internal class MicrosoftTranslatorService {
                 .addQueryParameter("textType", textType.value)
                 .build()
 
-            return MicrosoftHttp.post(translateUrl, listOf(MicrosoftSourceText(text))) { auth() }
+            val items = mutableListOf<MicrosoftSourceText>()
+            if (separator.isNotEmpty())
+                items.addAll(text.split(separator).map {
+                    MicrosoftSourceText(it)
+                })
+            else
+                items.add(MicrosoftSourceText(text))
+            println("Translating $items")
+            return MicrosoftHttp.post(translateUrl, items) { auth() }
         }
 
         private fun RequestBuilder.auth() {

@@ -70,11 +70,12 @@ object BaiduTranslator : AbstractTranslator() {
         return true
     }
 
-    override fun doTranslate(text: String, srcLang: Lang, targetLang: Lang): Translation {
+    override fun doTranslate(text: String, srcLang: Lang, targetLang: Lang,separator:String): Translation {
         return SimpleTranslateClient(this, BaiduTranslator::call, BaiduTranslator::parseTranslation).execute(
             text,
             srcLang,
-            targetLang
+            targetLang,
+            separator
         )
     }
 
@@ -97,7 +98,7 @@ object BaiduTranslator : AbstractTranslator() {
     }
 
     @Suppress("UNUSED_PARAMETER")
-    private fun parseTranslation(translation: String, original: String, srcLang: Lang, targetLang: Lang): Translation {
+    private fun parseTranslation(translation: String, original: String, srcLang: Lang, targetLang: Lang, separator: String): Translation {
         logger.i("Translate result: $translation")
 
         if (translation.isBlank()) {

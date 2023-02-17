@@ -161,7 +161,7 @@ private fun Translator.getTranslatedDocumentation(document: Document): Document 
     }
     val translation =
         if (formatted.isEmpty()) ""
-        else translate(formatted, Lang.AUTO, primaryLanguage).translation ?: ""
+        else translate(formatted, Lang.AUTO, primaryLanguage, "").translation ?: ""
 
     val newBody = Element("body")
     definition?.let { newBody.appendChild(it) }

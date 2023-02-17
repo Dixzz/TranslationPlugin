@@ -60,7 +60,7 @@ class TranslateService private constructor() : Disposable {
         return CacheService.getMemoryCache(text, srcLang, targetLang, translator.id)
     }
 
-    fun translate(text: String, srcLang: Lang, targetLang: Lang, listener: TranslateListener) {
+    fun translate(text: String, srcLang: Lang, targetLang: Lang, separator: String = "", listener: TranslateListener) {
         checkThread()
         CacheService.getMemoryCache(text, srcLang, targetLang, translator.id)?.let {
             listener.onSuccess(it)
@@ -78,7 +78,7 @@ class TranslateService private constructor() : Disposable {
         executeOnPooledThread {
             try {
                 with(translator) {
-                    translate(text, srcLang, targetLang).let { translation ->
+                    translate(text, srcLang, targetLang, separator).let { translation ->
                         translation.favoriteId = getFavoriteId(translation)
                         CacheService.putMemoryCache(text, srcLang, targetLang, id, translation)
                         invokeLater(modalityState) { listeners.run(key) { onSuccess(translation) } }

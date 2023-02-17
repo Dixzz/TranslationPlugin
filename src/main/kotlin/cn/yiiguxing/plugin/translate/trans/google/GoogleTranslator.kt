@@ -57,12 +57,12 @@ object GoogleTranslator : AbstractTranslator(), DocumentationTranslator {
     override val supportedTargetLanguages: List<Lang> = GoogleLanguageAdapter.supportedTargetLanguages
 
 
-    override fun doTranslate(text: String, srcLang: Lang, targetLang: Lang): Translation {
+    override fun doTranslate(text: String, srcLang: Lang, targetLang: Lang, separator: String): Translation {
         return SimpleTranslateClient(
             this,
             { _, _, _ -> call(text, srcLang, targetLang, false) },
             GoogleTranslator::parseTranslation
-        ).execute(text, srcLang, targetLang)
+        ).execute(text, srcLang, targetLang, separator)
     }
 
     override fun translateDocumentation(documentation: Document, srcLang: Lang, targetLang: Lang): Document {
@@ -105,7 +105,7 @@ object GoogleTranslator : AbstractTranslator(), DocumentationTranslator {
             GoogleTranslator::parseDocTranslation
         )
         client.updateCacheKey { it.update("DOCUMENTATION".toByteArray()) }
-        return client.execute(documentation, srcLang, targetLang).translation ?: ""
+        return client.execute(documentation, srcLang, targetLang, "").translation ?: ""
     }
 
     private fun String.replaceTag(targetTag: String, replacementTag: String): String {
@@ -148,6 +148,7 @@ object GoogleTranslator : AbstractTranslator(), DocumentationTranslator {
         original: String,
         srcLang: Lang,
         targetLang: Lang,
+        separator: String
     ): Translation {
         logger.i("Translate result: $translation")
 
@@ -166,6 +167,7 @@ object GoogleTranslator : AbstractTranslator(), DocumentationTranslator {
         original: String,
         srcLang: Lang,
         targetLang: Lang,
+        separator: String
     ): BaseTranslation {
         logger.i("Translate result: $translation")
 

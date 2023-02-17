@@ -2,7 +2,7 @@ package cn.yiiguxing.plugin.translate.trans
 
 
 typealias TranslateCall = (text: String, srcLang: Lang, targetLang: Lang) -> String
-typealias TranslationParser<T> = (translation: String, original: String, srcLang: Lang, targetLang: Lang) -> T
+typealias TranslationParser<T> = (translation: String, original: String, srcLang: Lang, targetLang: Lang, separator: String) -> T
 
 
 class SimpleTranslateClient<T : BaseTranslation>(
@@ -15,7 +15,7 @@ class SimpleTranslateClient<T : BaseTranslation>(
         return call(text, srcLang, targetLang)
     }
 
-    override fun parse(translation: String, original: String, srcLang: Lang, targetLang: Lang): T {
-        return parser(translation, original, srcLang, targetLang)
+    override fun parse(translation: String, original: String, srcLang: Lang, targetLang: Lang, separator: String): T {
+        return parser(translation, original, srcLang, targetLang, separator)
     }
 }

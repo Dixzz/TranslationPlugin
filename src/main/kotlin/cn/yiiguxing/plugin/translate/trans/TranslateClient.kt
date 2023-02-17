@@ -31,7 +31,7 @@ abstract class TranslateClient<T : BaseTranslation>(private val translator: Tran
         return key.digest().toHexString()
     }
 
-    fun execute(text: String, srcLang: Lang, targetLang: Lang): T {
+    fun execute(text: String, srcLang: Lang, targetLang: Lang, separator: String): T {
         if (srcLang !in translator.supportedSourceLanguages) {
             throw UnsupportedLanguageException(srcLang)
         }
@@ -42,14 +42,14 @@ abstract class TranslateClient<T : BaseTranslation>(private val translator: Tran
         val cacheKey = getCacheKey(text, srcLang, targetLang)
         val cache = CacheService.getDiskCache(cacheKey)
         if (cache != null) try {
-            return parse(cache, text, srcLang, targetLang)
+            return parse(cache, text, srcLang, targetLang, separator)
         } catch (e: Throwable) {
             LOG.w("Failed to parse from disk cache.", e)
         }
 
         val result = doExecute(text, srcLang, targetLang)
         val translation = try {
-            parse(result, text, srcLang, targetLang)
+            parse(result, text, srcLang, targetLang, separator)
         } catch (error: Throwable) {
             if (!skipInvestigation(error)) {
                 investigate(error, text, srcLang, targetLang, result)
@@ -63,7 +63,7 @@ abstract class TranslateClient<T : BaseTranslation>(private val translator: Tran
 
     protected abstract fun doExecute(text: String, srcLang: Lang, targetLang: Lang): String
 
-    protected abstract fun parse(translation: String, original: String, srcLang: Lang, targetLang: Lang): T
+    protected abstract fun parse(translation: String, original: String, srcLang: Lang, targetLang: Lang, separator: String): T
 
     protected open fun skipInvestigation(error: Throwable): Boolean {
         return error is TranslationResultException

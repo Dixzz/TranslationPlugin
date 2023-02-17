@@ -132,7 +132,7 @@ class TranslateAndReplaceAction : AutoSelectAction(true, NON_WHITESPACE_CONDITIO
             if (checkProcessCanceledAndEditorDisposed()) {
                 return
             }
-            TranslateService.translate(processedText, Lang.AUTO, targetLang, object : TranslateListener {
+            TranslateService.translate(processedText, Lang.AUTO, targetLang, "", object : TranslateListener {
                 override fun onSuccess(translation: Translation) {
                     if (checkProcessCanceledAndEditorDisposed()) {
                         return

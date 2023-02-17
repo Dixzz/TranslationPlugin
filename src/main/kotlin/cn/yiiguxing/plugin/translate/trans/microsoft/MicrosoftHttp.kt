@@ -3,14 +3,21 @@ package cn.yiiguxing.plugin.translate.trans.microsoft
 import cn.yiiguxing.plugin.translate.trans.microsoft.data.MicrosoftError
 import cn.yiiguxing.plugin.translate.trans.microsoft.data.presentableError
 import cn.yiiguxing.plugin.translate.util.d
+import cn.yiiguxing.plugin.translate.util.i
+import com.google.common.io.Files
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.util.io.HttpRequests
 import com.intellij.util.io.RequestBuilder
+import org.apache.commons.io.IOUtils
+import org.apache.commons.lang.StringEscapeUtils
+import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
+import java.nio.ByteBuffer
+import java.nio.charset.Charset
 import java.util.zip.GZIPInputStream
 
 internal object MicrosoftHttp {
@@ -21,6 +28,7 @@ internal object MicrosoftHttp {
     private val LOG: Logger = logger<MicrosoftHttp>()
 
     fun post(url: String, data: Any, init: RequestBuilder.() -> Unit): String {
+        println("Posting $url")
         return HttpRequests.post(url, JSON_MIME_TYPE)
             .accept(JSON_MIME_TYPE)
             .apply(init)
@@ -28,7 +36,9 @@ internal object MicrosoftHttp {
             .connect {
                 it.write(GSON.toJson(data))
                 checkResponseCode(it.connection as HttpURLConnection)
-                it.readString()
+                it.reader.use {
+                    it.readText()
+                }
             }
     }
 

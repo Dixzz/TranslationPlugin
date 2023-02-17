@@ -45,12 +45,12 @@ object DeeplTranslator : AbstractTranslator(), DocumentationTranslator {
         return true
     }
 
-    override fun doTranslate(text: String, srcLang: Lang, targetLang: Lang): Translation {
+    override fun doTranslate(text: String, srcLang: Lang, targetLang: Lang, separator: String): Translation {
         return SimpleTranslateClient(
             this,
             { _, _, _ -> call(text, srcLang, targetLang, false) },
             DeeplTranslator::parseTranslation
-        ).execute(text, srcLang, targetLang)
+        ).execute(text, srcLang, targetLang, "")
     }
 
     private fun call(text: String, srcLang: Lang, targetLang: Lang, isDocument: Boolean): String {
@@ -59,7 +59,7 @@ object DeeplTranslator : AbstractTranslator(), DocumentationTranslator {
     }
 
     @Suppress("UNUSED_PARAMETER")
-    private fun parseTranslation(translation: String, original: String, srcLang: Lang, targetLang: Lang): Translation {
+    private fun parseTranslation(translation: String, original: String, srcLang: Lang, targetLang: Lang, separator: String): Translation {
         logger.i("Translate result: $translation")
 
         return Gson().fromJson(translation, DeeplTranslations::class.java).apply {
@@ -103,7 +103,7 @@ object DeeplTranslator : AbstractTranslator(), DocumentationTranslator {
             DeeplTranslator::parseTranslation
         )
         client.updateCacheKey { it.update("DOCUMENTATION".toByteArray()) }
-        return client.execute(documentation, srcLang, targetLang).translation ?: ""
+        return client.execute(documentation, srcLang, targetLang, "").translation ?: ""
     }
 
     override fun createErrorInfo(throwable: Throwable): ErrorInfo? {

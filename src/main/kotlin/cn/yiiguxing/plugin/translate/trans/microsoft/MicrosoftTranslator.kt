@@ -30,12 +30,12 @@ object MicrosoftTranslator : AbstractTranslator(), DocumentationTranslator {
     override val supportedSourceLanguages: List<Lang> = MicrosoftLanguageAdapter.supportedSourceLanguages
     override val supportedTargetLanguages: List<Lang> = MicrosoftLanguageAdapter.supportedTargetLanguages
 
-    override fun doTranslate(text: String, srcLang: Lang, targetLang: Lang): Translation {
+    override fun doTranslate(text: String, srcLang: Lang, targetLang: Lang, separator: String): Translation {
         return SimpleTranslateClient(
             this,
-            { _, _, _ -> MicrosoftTranslatorService.translate(text, srcLang, targetLang, TextType.PLAIN) },
+            { _, _, _ -> MicrosoftTranslatorService.translate(text, srcLang, targetLang, TextType.PLAIN, separator) },
             ::parseTranslation
-        ).execute(text, srcLang, targetLang)
+        ).execute(text, srcLang, targetLang, separator)
     }
 
     override fun translateDocumentation(documentation: Document, srcLang: Lang, targetLang: Lang): Document {
@@ -66,17 +66,40 @@ object MicrosoftTranslator : AbstractTranslator(), DocumentationTranslator {
     private fun translateDocumentation(documentation: String, srcLang: Lang, targetLang: Lang): String {
         val client = SimpleTranslateClient(
             this,
-            { _, _, _ -> MicrosoftTranslatorService.translate(documentation, srcLang, targetLang, TextType.HTML) },
+            { _, _, _ -> MicrosoftTranslatorService.translate(documentation, srcLang, targetLang, TextType.HTML, "") },
             ::parseTranslation
         )
         client.updateCacheKey { it.update("DOCUMENTATION".toByteArray()) }
-        return client.execute(documentation, srcLang, targetLang).translation ?: ""
+        return client.execute(documentation, srcLang, targetLang, "").translation ?: ""
     }
 
-    private fun parseTranslation(translation: String, original: String, srcLang: Lang, targetLang: Lang): Translation {
+    private fun parseTranslation(
+        translation: String,
+        original: String,
+        srcLang: Lang,
+        targetLang: Lang,
+        separator: String
+    ): Translation {
         LOG.i("Translate result: $translation")
 
         val type = object : TypeToken<ArrayList<MicrosoftTranslation>>() {}.type
+        val microsoftTranslations = Gson().fromJson<ArrayList<MicrosoftTranslation>>(translation, type)
+        if (separator.isNotEmpty()) {
+            val builder = StringBuilder()
+            microsoftTranslations.forEach {
+                builder.append(it.translations.first().text)
+                if (it != microsoftTranslations.last())
+                    builder.append(separator)
+            }
+
+            return Translation(
+                original,
+                if (microsoftTranslations.isEmpty().not() && separator.isNotEmpty()) builder.toString() else original,
+                srcLang,
+                targetLang,
+                emptyList()
+            )
+        }
         return Gson().fromJson<ArrayList<MicrosoftTranslation>>(translation, type)
             .firstOrNull()
             ?.apply {

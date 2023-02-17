@@ -52,12 +52,12 @@ object AliTranslator : AbstractTranslator(), DocumentationTranslator {
         return true
     }
 
-    override fun doTranslate(text: String, srcLang: Lang, targetLang: Lang): Translation {
+    override fun doTranslate(text: String, srcLang: Lang, targetLang: Lang, separator: String): Translation {
         return SimpleTranslateClient(
             this,
             { _, _, _ -> call(text, srcLang, targetLang, false) },
             AliTranslator::parseTranslation
-        ).execute(text, srcLang, targetLang)
+        ).execute(text, srcLang, targetLang, separator)
     }
 
     override fun translateDocumentation(documentation: Document, srcLang: Lang, targetLang: Lang): Document {
@@ -77,7 +77,7 @@ object AliTranslator : AbstractTranslator(), DocumentationTranslator {
             )
             val translation = with(client) {
                 updateCacheKey { it.update("DOCUMENTATION".toByteArray()) }
-                execute(content, srcLang, targetLang)
+                execute(content, srcLang, targetLang, "")
             }
 
             body.html(translation.translation ?: "")
@@ -162,7 +162,8 @@ object AliTranslator : AbstractTranslator(), DocumentationTranslator {
         translation: String,
         original: String,
         srcLang: Lang,
-        targetLang: Lang
+        targetLang: Lang,
+        separator: String
     ): Translation {
         logger.i("Translate result: $translation")
 

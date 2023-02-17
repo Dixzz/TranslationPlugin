@@ -25,7 +25,7 @@ interface Translator {
 
     fun checkConfiguration(force: Boolean = false): Boolean = true
 
-    fun translate(text: String, srcLang: Lang, targetLang: Lang): Translation
+    fun translate(text: String, srcLang: Lang, targetLang: Lang, separator: String): Translation
 
     val defaultLangForLocale: Lang
 
