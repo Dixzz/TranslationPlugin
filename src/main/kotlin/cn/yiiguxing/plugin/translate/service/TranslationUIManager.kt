@@ -35,6 +35,7 @@ open class TranslationUIManager private constructor() : Disposable {
      * 关闭显示中的气泡和对话框
      */
     private fun disposeUI() {
+        return
         checkThread()
         balloonRef.get()?.hide()
         translationDialogRef.get()?.close()

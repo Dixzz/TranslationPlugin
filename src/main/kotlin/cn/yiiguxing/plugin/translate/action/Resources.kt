@@ -19,9 +19,9 @@ data class Abcd2(
     val name: String? = null,
 
 
-    @field:JacksonXmlElementWrapper(useWrapping = false)
-    @field:JacksonXmlProperty(isAttribute = true)
-    val translatable: String? = null,
+//    @field:JacksonXmlElementWrapper(useWrapping = false)
+//    @field:JacksonXmlProperty(isAttribute = true)
+//    val translatable: String? = null,
 
     @field:JacksonXmlText
     @field:JacksonXmlElementWrapper(useWrapping = false, localName = "string")
@@ -42,7 +42,7 @@ data class Abcd2(
     override fun hashCode(): Int {
         var result = name?.hashCode() ?: 0
         result = 31 * result + (inner?.hashCode() ?: 0)
-        result = 31 * result + (translatable?.hashCode() ?: 0)
+//        result = 31 * result + (translatable?.hashCode() ?: 0)
         return result
     }
 }
